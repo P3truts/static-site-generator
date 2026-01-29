@@ -11,7 +11,7 @@ class LeafNode(HTMLNode):
             for prop, value in self.props.items():
                 properties += f" {prop}=\"{value}\""
         if not self.value:
-            raise ValueError
+            raise ValueError("HTMLNode value is missing!")
         if self.tag == None:
             result = self.value
         else:
