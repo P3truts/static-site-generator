@@ -26,7 +26,7 @@ class TestHTMLNode(unittest.TestCase):
         child = HTMLNode()
         node = HTMLNode("h1", "TestNode", [child], node_props) 
 
-        expected_props = " href=www.url.com"
+        expected_props = " href=\"www.url.com\""
         result_props = node.props_to_html()
         self.assertEqual(expected_props, result_props)
 

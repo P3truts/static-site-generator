@@ -16,7 +16,7 @@ class HTMLNode():
             return text
 
         for k, v in self.props.items():
-            text += f" {k}={v}"
+            text += f" {k}=\"{v}\""
 
         return text
 
