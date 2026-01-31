@@ -157,6 +157,93 @@ class TestSplit(unittest.TestCase):
 
         self.assertRaises(Exception, lambda: Split.split_nodes_images([node]))
 
+    def test_markdown_to_blocks_single(self):
+        md = """
+                This is **bolded** paragraph
+
+                This is another paragraph with _italic_ text and `code` here
+                This is the same paragraph on a new line
+
+                - This is a list
+                - with items
+            """
+        blocks = Split.markdown_to_blocks(md)
+
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "- This is a list\n- with items",
+            ],
+        )
+
+    def test_markdown_to_blocks_multiple(self):
+        md = """
+                This is **bolded** paragraph
+
+                This is **bolded** paragraph
+
+                This is another paragraph with _italic_ text and `code` here
+                This is the same paragraph on a new line
+
+                This is another paragraph with _italic_ text and `code` here
+                This is the same paragraph on a new line
+
+                - This is a list
+                - with items
+
+                - This is a list
+                - with items
+            """
+        blocks = Split.markdown_to_blocks(md)
+
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "- This is a list\n- with items",
+                "- This is a list\n- with items",
+            ],
+        )
+
+    def test_markdown_to_blocks_mixed(self):
+        md = """
+                This is **bolded** paragraph
+
+                This is _italic_ paragraph
+
+                This is another paragraph with _italic_ text and `code` here
+                This is the same paragraph on a new line
+
+                This is another paragraph with **bolded** text and `code` here
+                This is the same paragraph on a new _italic_ line
+
+                - This is a **bolded** list
+                - with `code` items
+
+                - This is another _italic_ list
+                - with ![img](url) and [link](url) items
+            """
+        blocks = Split.markdown_to_blocks(md)
+
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is _italic_ paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "This is another paragraph with **bolded** text and `code` here\nThis is the same paragraph on a new _italic_ line",
+                "- This is a **bolded** list\n- with `code` items",
+                "- This is another _italic_ list\n- with ![img](url) and [link](url) items",
+            ],
+        )
+
+
+
 
 if __name__ == "__main__":
     unittest.main()

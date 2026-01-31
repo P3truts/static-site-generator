@@ -89,4 +89,18 @@ class Split:
 
         return res_list
 
+    @staticmethod
+    def markdown_to_blocks(markdown):
+        blocks = markdown.split("\n\n")
+        trimmed_blocks = []
+
+        for block in blocks:
+            trimmed_blocks.append(block.strip())
+
+        final_blocks = []
+        for block in trimmed_blocks:
+            if block != "":
+                final_blocks.append(re.sub(r' {2,}', '', block))
+
+        return final_blocks
 
