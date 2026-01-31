@@ -1,6 +1,18 @@
 from src.textnode import TextNode, TextType
 from src.leafnode import LeafNode
 from core.split import Split
+from enum import Enum
+import re
+
+
+class BlockType(Enum):
+    PARAGRAPH = "paragraph"
+    HEADING = "heading"
+    CODE = "code"
+    QUOTE = "quote"
+    UNORDERED_LIST = "unordered_list"
+    ORDERED_LIST = "ordered_list"
+
 
 class Transform:
     @staticmethod
@@ -31,4 +43,27 @@ class Transform:
 
         return link_nodes
 
+    @staticmethod
+    def block_to_blocktype(md_block):
+        head_patt = r"#{1,6}\s"
+        if "#" in md_block[0] and bool(re.search(head_patt, md_block[:8])):
+            return BlockType.HEADING
 
+        code_patt = "```\n"
+        code_end_patt = "```"
+        if code_patt in md_block[:5] and code_end_patt in md_block[3:]:
+            return BlockType.CODE
+
+        quote_patt = ">"
+        if quote_patt in md_block[0]:
+            return BlockType.QUOTE
+
+        uno_list_patt = "- "
+        if uno_list_patt in md_block[:2]:
+            return BlockType.UNORDERED_LIST
+
+        o_list_patt = r"1. "
+        if o_list_patt in md_block[:3]:
+            return BlockType.ORDERED_LIST
+
+        return BlockType.PARAGRAPH

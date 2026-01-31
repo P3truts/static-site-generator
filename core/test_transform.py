@@ -1,5 +1,5 @@
 from src.textnode import TextNode, TextType
-from core.transform import Transform
+from core.transform import BlockType, Transform
 import unittest
 
 class TestTransform(unittest.TestCase):
@@ -130,6 +130,83 @@ class TestTransform(unittest.TestCase):
         res = Transform.text_to_textnodes(text)
 
         self.assertEqual(expected, res)
+
+    def test_block_to_block_type_heading(self):
+        block = "### this is a heading"
+
+        res = Transform.block_to_blocktype(block)
+
+        self.assertEqual(BlockType.HEADING, res)
+
+    def test_block_to_block_type_code(self):
+        block = "```\n this is a code ```"
+
+        res = Transform.block_to_blocktype(block)
+
+        self.assertEqual(BlockType.CODE, res)
+
+    def test_block_to_block_type_quote(self):
+        block = "> this is a quote"
+
+        res = Transform.block_to_blocktype(block)
+
+        self.assertEqual(BlockType.QUOTE, res)
+
+    def test_block_to_block_type_uno_list(self):
+        block = "- this is a list\n- an unordered one"
+
+        res = Transform.block_to_blocktype(block)
+
+        self.assertEqual(BlockType.UNORDERED_LIST, res)
+
+    def test_block_to_block_type_o_list(self):
+        block = "1. this is a list\n2. an ordered one"
+
+        res = Transform.block_to_blocktype(block)
+
+        self.assertEqual(BlockType.ORDERED_LIST, res)
+
+    def test_block_to_block_type_paragraph(self):
+        block = "this is a paragraph"
+
+        res = Transform.block_to_blocktype(block)
+
+        self.assertEqual(BlockType.PARAGRAPH, res)
+
+    def test_block_to_block_type_not_heading(self):
+        block = "this # is a heading"
+
+        res = Transform.block_to_blocktype(block)
+
+        self.assertNotEqual(BlockType.HEADING, res)
+
+    def test_block_to_block_type_not_code(self):
+        block = "``\n this is a code ``"
+
+        res = Transform.block_to_blocktype(block)
+
+        self.assertNotEqual(BlockType.CODE, res)
+
+    def test_block_to_block_type_not_quote(self):
+        block = " this> is a quote"
+
+        res = Transform.block_to_blocktype(block)
+
+        self.assertNotEqual(BlockType.QUOTE, res)
+
+    def test_block_to_block_type_not_uno_list(self):
+        block = "stuff below: - this is a list\n- an unordered one"
+
+        res = Transform.block_to_blocktype(block)
+
+        self.assertNotEqual(BlockType.UNORDERED_LIST, res)
+
+    def test_block_to_block_type_not_o_list(self):
+        block = "stuff below: 1. this is a list\n2. an ordered one"
+
+        res = Transform.block_to_blocktype(block)
+
+        self.assertNotEqual(BlockType.ORDERED_LIST, res)
 
 
 if __name__ == "__main__":
