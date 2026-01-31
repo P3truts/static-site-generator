@@ -1,24 +1,8 @@
 from src.textnode import TextNode, TextType
-from src.leafnode import LeafNode
+from core.extract import Extract
 import re
 
-class Utils:
-    @staticmethod
-    def text_node_to_html_node(text_node):
-        if text_node.text_type == TextType.PLAIN_TEXT:
-            return LeafNode(None, text_node.text)
-        if text_node.text_type == TextType.BOLD_TEXT:
-            return LeafNode("b", text_node.text)
-        if text_node.text_type == TextType.ITALIC_TEXT:
-            return LeafNode("i", text_node.text)
-        if text_node.text_type == TextType.CODE_TEXT:
-            return LeafNode("code", text_node.text)
-        if text_node.text_type == TextType.LINK:
-            return LeafNode("a", text_node.text, {"href":text_node.url})
-        if text_node.text_type == TextType.IMAGE:
-            return LeafNode("img", "", {"src":text_node.url, "alt":text_node.text})
-
-        raise ValueError(f"TextNode is missing text type!")
+class Split:
 
     @staticmethod
     def split_nodes_delimiter(old_nodes, delimiter, text_type):
@@ -31,6 +15,9 @@ class Utils:
                 res_list.append(node)
             else:
                 new_nodes = node.text.split(delimiter)
+                if len(new_nodes) == 1 and delimiter not in new_nodes:
+                    res_list.append(node)
+                    continue
                 if len(new_nodes) < 3 or len(new_nodes) % 2 == 0: 
                     raise Exception("Invalid Markdown syntax!")
                 for new_node in new_nodes:
@@ -38,46 +25,6 @@ class Utils:
                         res_node = TextNode(new_node, TextType.PLAIN_TEXT)
                     else:
                         res_node = TextNode(new_node, text_type)
-                    res_list.append(res_node)
-
-        return res_list
-
-    @staticmethod
-    def extract_markdown_images(text):
-        patt = r"\!\[(.*?)\]\((.*?)\)"
-
-        res = re.findall(patt, text)
-
-        return res
-
-    @staticmethod
-    def extract_markdown_links(text):
-        patt = r"\[(.*?)\]\((.*?)\)"
-
-        res = re.findall(patt, text)
-
-        return res
-
-    @staticmethod
-    def split_nodes_links(old_nodes):
-        if not old_nodes:
-            raise ValueError("Nodes are missing!")
-
-        res_list = []
-        for node in old_nodes:
-            if node.text_type != TextType.PLAIN_TEXT:
-                res_list.append(node)
-            else:
-                patt = r"(\[(?:.*?)\]\((?:.*?)\))"
-                new_nodes = re.split(patt, node.text)
-                if len(new_nodes) < 3 or len(new_nodes) % 2 == 0: 
-                    raise Exception("Invalid Markdown syntax!")
-                for new_node in new_nodes:
-                    if new_nodes.index(new_node) % 2 == 0:
-                        res_node = TextNode(new_node, TextType.PLAIN_TEXT)
-                    else:
-                        link_extr = Utils.extract_markdown_links(new_node)
-                        res_node = TextNode(link_extr[0][0], TextType.LINK, link_extr[0][1])
                     res_list.append(res_node)
 
         return res_list
@@ -94,15 +41,52 @@ class Utils:
             else:
                 patt = r"(\!\[(?:.*?)\]\((?:.*?)\))"
                 new_nodes = re.split(patt, node.text)
+                if len(new_nodes) == 1 and "![" not in new_nodes[0]:
+                    res_list.append(node)
+                    continue
                 if len(new_nodes) < 3 or len(new_nodes) % 2 == 0: 
                     raise Exception("Invalid Markdown syntax!")
                 for new_node in new_nodes:
+                    indx = new_nodes.index(new_node)
+                    if (indx == 0 or indx == len(new_nodes)) and new_node == "":
+                        continue
                     if new_nodes.index(new_node) % 2 == 0:
                         res_node = TextNode(new_node, TextType.PLAIN_TEXT)
                     else:
-                        link_extr = Utils.extract_markdown_images(new_node)
+                        link_extr = Extract.extract_markdown_images(new_node)
                         res_node = TextNode(link_extr[0][0], TextType.IMAGE, link_extr[0][1])
                     res_list.append(res_node)
 
         return res_list
+
+    @staticmethod
+    def split_nodes_links(old_nodes):
+        if not old_nodes:
+            raise ValueError("Nodes are missing!")
+
+        res_list = []
+        for node in old_nodes:
+            if node.text_type != TextType.PLAIN_TEXT:
+                res_list.append(node)
+            else:
+                patt = r"(\[(?:.*?)\]\((?:.*?)\))"
+                new_nodes = re.split(patt, node.text)
+                if len(new_nodes) == 1 and "](" not in new_nodes[0]:
+                    res_list.append(node)
+                    continue
+                if len(new_nodes) < 3 or len(new_nodes) % 2 == 0: 
+                    raise Exception("Invalid Markdown syntax!")
+                for new_node in new_nodes:
+                    indx = new_nodes.index(new_node)
+                    if (indx == 0 or indx == len(new_nodes) - 1) and new_node == "":
+                        continue
+                    if new_nodes.index(new_node) % 2 == 0:
+                        res_node = TextNode(new_node, TextType.PLAIN_TEXT)
+                    else:
+                        link_extr = Extract.extract_markdown_links(new_node)
+                        res_node = TextNode(link_extr[0][0], TextType.LINK, link_extr[0][1])
+                    res_list.append(res_node)
+
+        return res_list
+
 
