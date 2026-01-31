@@ -1,4 +1,4 @@
-from src.textnode import TextType
+from src.textnode import TextNode, TextType
 from src.leafnode import LeafNode
 
 class Utils:
@@ -21,4 +21,22 @@ class Utils:
 
     @staticmethod
     def split_nodes_delimiter(old_nodes, delimiter, text_type):
-        raise NotImplemented("to be done")
+        if not old_nodes:
+            raise ValueError("Nodes are missing!")
+
+        res_list = []
+        for node in old_nodes:
+            if node.text_type != TextType.PLAIN_TEXT:
+                res_list.append(node)
+            else:
+                new_nodes = node.text.split(delimiter, 2)
+                if len(new_nodes) < 3 or len(new_nodes) % 2 == 0: 
+                    raise Exception("Invalid Markdown syntax!")
+                for new_node in new_nodes:
+                    if new_nodes.index(new_node) % 2 == 0:
+                        res_node = TextNode(new_node, TextType.PLAIN_TEXT)
+                    else:
+                        res_node = TextNode(new_node, text_type)
+                    res_list.append(res_node)
+
+        return res_list
