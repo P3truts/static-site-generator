@@ -208,6 +208,193 @@ class TestTransform(unittest.TestCase):
 
         self.assertNotEqual(BlockType.ORDERED_LIST, res)
 
+    def test_markdown_to_html_node_paragraph(self):
+        md = """
+                This is **bolded** paragraph
+                text in a p
+                tag here
+
+                This is another paragraph with _italic_ text and `code` here
+
+            """
+
+        node = Transform.markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
+        )
+
+    def test_markdown_to_html_node_heading(self):
+        md = """
+                ### This is **bolded** heading
+                text in a p
+                tag here
+
+                ##### This is another heading with _italic_ text and `code` here
+
+            """
+
+        node = Transform.markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><h3> This is <b>bolded</b> heading\ntext in a p\ntag here</h3><h5> This is another heading with <i>italic</i> text and <code>code</code> here</h5></div>",
+        )
+
+    def test_markdown_to_html_node_quote(self):
+        md = """
+                > This is **bolded** quote
+                text in a p
+                tag here
+
+                >This is another quote with _italic_ text and `code` here
+
+            """
+
+        node = Transform.markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><blockquote> This is <b>bolded</b> quote\ntext in a p\ntag here</blockquote><blockquote>This is another quote with <i>italic</i> text and <code>code</code> here</blockquote></div>",
+        )
+
+    def test_markdown_to_html_node_unordered_list(self):
+        md = """
+                # This is a heading
+
+                This is an unordered list:
+
+                - This is the first list item in a list block
+                - This is a list item
+                - This is another list item
+             """
+
+        node = Transform.markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><h1> This is a heading</h1><p>This is an unordered list:</p><ul><li>- This is the first list item in a list block</li>\n<li>- This is a list item</li>\n<li>- This is another list item</li>\n</ul></div>",
+        )
+
+    def test_markdown_to_html_node_ordered_list(self):
+        md = """
+                # This is a heading
+
+                This is an ordered list:
+
+                1. This is the first list item in a list block
+                2. This is a list item
+                3. This is another list item
+             """
+
+        node = Transform.markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><h1> This is a heading</h1><p>This is an ordered list:</p><ol><li>1. This is the first list item in a list block</li>\n<li>2. This is a list item</li>\n<li>3. This is another list item</li>\n</ol></div>",
+        )
+
+    def test_markdown_to_html_node_code(self):
+        md = """
+                ```
+                This is text that _should_ remain
+                the **same** even with inline stuff
+                ```
+            """
+
+        node = Transform.markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff</code></pre></div>",
+        )
+
+    def test_markdown_to_html_node_paragraph_not_eq(self):
+        md = "         "
+
+        node = Transform.markdown_to_html_node(md)
+
+        self.assertRaises(ValueError, lambda: node.to_html())
+
+    def test_markdown_to_html_node_heading_not_eq(self):
+        md = """
+                #This is **bolded** heading
+                text in a p
+                tag here
+
+                #####This is another heading with _italic_ text and `code` here
+            """
+
+        node = Transform.markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertNotEqual(
+            html,
+            "<div><h3> This is <b>bolded</b> heading\ntext in a p\ntag here</h3><h5> This is another heading with <i>italic</i> text and <code>code</code> here</h5></div>",
+        )
+
+    def test_markdown_to_html_node_quote_not_eq(self):
+        md = """
+                <> This is **bolded** quote
+                text in a p
+                tag here
+
+                 >This is another quote with _italic_ text and `code` here
+
+            """
+
+        node = Transform.markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertNotEqual(
+            html,
+            "<div><blockquote> This is <b>bolded</b> quote\ntext in a p\ntag here</blockquote><blockquote>This is another quote with <i>italic</i> text and <code>code</code> here</blockquote></div>",
+        )
+
+    def test_markdown_to_html_node_unordered_list_not_eq(self):
+        md = """
+                # This is a heading
+
+                This is an unordered list:
+
+                 This is the first list item in a list block
+                - This is a list item
+                -This is another list item
+             """
+
+        node = Transform.markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertNotEqual(
+            html,
+            "<div><h1> This is a heading</h1><p>This is an unordered list:</p><ul><li>- This is the first list item in a list block</li>\n<li>- This is a list item</li>\n<li>- This is another list item</li>\n</ul></div>",
+        )
+    def test_markdown_to_html_node_ordered_list_not_eq(self):
+        md = """
+                # This is a heading
+
+                This is an ordered list:
+
+                1 This is the first list item in a list block
+                . This is a list item
+                 This is another list item
+             """
+
+        node = Transform.markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertNotEqual(
+            html,
+            "<div><h1> This is a heading</h1><p>This is an ordered list:</p><ol><li>1. This is the first list item in a list block</li>\n<li>2. This is a list item</li>\n<li>3. This is another list item</li>\n</ol></div>",
+        )
+
+    def test_markdown_to_html_node_code_raises_Ex(self):
+        md = """
+                ``
+                This is text that _should_ remain
+                the **same** even with inline stuff
+                `
+            """
+
+        self.assertRaises(Exception, lambda: Transform.markdown_to_html_node(md))
+
 
 if __name__ == "__main__":
     unittest.main()

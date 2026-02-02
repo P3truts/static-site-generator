@@ -1,4 +1,4 @@
-from htmlnode import HTMLNode
+from src.htmlnode import HTMLNode
 
 class ParentNode(HTMLNode):
     def __init__(self, tag, children, props=None):
@@ -12,21 +12,12 @@ class ParentNode(HTMLNode):
 
         parent_props = ""
         if self.props:
-            for prop, val in self.props.items():
-                parent_props += f" {prop}=\"{val}\""
+            parent_props = self.props_to_html()
 
         result = f"<{self.tag}{parent_props}>"
         if self.children:
             for child in self.children:
-                if not child.children:
-                    props_res = ""
-                    if child.props:
-                        for prop, val in child.props.items():
-                            props_res += f" {prop}=\"{val}\""
-                    child_res = f"<{child.tag}{props_res}>{child.value}</{child.tag}>"
-                    result += child_res
-                else:
-                    result += child.to_html()
+                result += child.to_html()
 
         result += f"</{self.tag}>"
         return result

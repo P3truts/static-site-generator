@@ -8,6 +8,11 @@ class TestParentNode(unittest.TestCase):
         parent_node = ParentNode("div", [child_node])
         self.assertEqual(parent_node.to_html(), "<div><span>child</span></div>")
 
+    def test_to_html_with_children_tagless(self):
+        child_node = LeafNode(None, "child")
+        parent_node = ParentNode("div", [child_node])
+        self.assertEqual(parent_node.to_html(), "<div>child</div>")
+
     def test_to_html_with_children_props(self):
         child_node = LeafNode("span", "child")
         props = {"color":"red"}
@@ -96,7 +101,7 @@ class TestParentNode(unittest.TestCase):
 
         self.assertNotEqual(first_node, second_node)
 
-    def test_to_html_with_children(self):
+    def test_to_html_not_eq_with_children(self):
         child_node = LeafNode("error", "child")
         parent_node = ParentNode("div", [child_node])
         self.assertNotEqual(parent_node.to_html(), "<div><span>child</span></div>")

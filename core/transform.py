@@ -1,5 +1,6 @@
 from src.textnode import TextNode, TextType
 from src.leafnode import LeafNode
+from src.parentnode import ParentNode
 from core.split import Split
 from enum import Enum
 import re
@@ -67,3 +68,65 @@ class Transform:
             return BlockType.ORDERED_LIST
 
         return BlockType.PARAGRAPH
+
+    @staticmethod
+    def markdown_to_html_node(markdown):
+        blocks = Split.markdown_to_blocks(markdown)
+
+        nodes = []
+        for block in blocks:
+            bl_typ = Transform.block_to_blocktype(block)
+            if bl_typ == BlockType.PARAGRAPH:
+                rblock = block.replace("\n", " ")
+                child_nodes = Transform._text_to_children(rblock)
+                node = ParentNode("p", child_nodes, None)
+                nodes.append(node)
+            elif bl_typ == BlockType.HEADING:
+                h_num = block[:6].count("#")
+                child_nodes = Transform._text_to_children(block)
+                for child in child_nodes:
+                    child.value = child.value.strip("#")
+                node = ParentNode(f"h{h_num}", child_nodes, None)
+                nodes.append(node)
+            elif bl_typ == BlockType.QUOTE:
+                rblock = block.strip(">")
+                child_nodes = Transform._text_to_children(rblock)
+                node = ParentNode("blockquote", child_nodes, None)
+                nodes.append(node)
+            elif bl_typ == BlockType.UNORDERED_LIST:
+                child_nodes = Split.split_text_block_to_list_blocks(block)
+                last_nodes = []
+                for tnode in child_nodes:
+                    lnode = Transform.text_node_to_html_node(tnode)
+                    last_nodes.append(lnode)
+                node = ParentNode("ul", last_nodes)
+                nodes.append(node)
+            elif bl_typ == BlockType.ORDERED_LIST:
+                child_nodes = Split.split_text_block_to_list_blocks(block)
+                last_nodes = []
+                for tnode in child_nodes:
+                    lnode = Transform.text_node_to_html_node(tnode)
+                    last_nodes.append(lnode)
+                node = ParentNode("ol", last_nodes)
+                nodes.append(node)
+            else:
+                sblock = block.strip("`")
+                rblock = sblock.strip("\n")
+                tnode = TextNode(rblock, TextType.CODE_TEXT)
+                cnode = Transform.text_node_to_html_node(tnode)
+                node = ParentNode("pre", [cnode])
+                nodes.append(node)
+
+        return ParentNode("div", nodes, None)
+
+    @staticmethod
+    def _text_to_children(text):
+        text_nodes = Transform.text_to_textnodes(text)
+        child_nodes = []
+        for tnode in text_nodes:
+            lnode = Transform.text_node_to_html_node(tnode)
+            child_nodes.append(lnode)
+
+        return child_nodes
+
+

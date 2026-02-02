@@ -104,3 +104,19 @@ class Split:
 
         return final_blocks
 
+    @staticmethod
+    def split_text_block_to_list_blocks(block):
+        if block == "":
+            raise ValueError("List block is empty!")
+
+        res_list = []
+        patt = r"\n"
+        litems = re.split(patt, block)
+        for litem in litems:
+            text = f"<li>{litem}</li>\n"
+            res_node = TextNode(text, TextType.PLAIN_TEXT)
+            res_list.append(res_node)
+
+        return res_list
+
+

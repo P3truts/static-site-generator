@@ -8,11 +8,10 @@ class LeafNode(HTMLNode):
         result = ""
         properties = ""
         if self.props is not None:
-            for prop, value in self.props.items():
-                properties += f" {prop}=\"{value}\""
+            properties = self.props_to_html()
         if not self.value:
             raise ValueError("HTMLNode value is missing!")
-        if self.tag == None:
+        if self.tag is None:
             result = self.value
         else:
             result = f"<{self.tag}{properties}>{self.value}</{self.tag}>"
