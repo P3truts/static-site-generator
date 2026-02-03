@@ -9,7 +9,7 @@ class LeafNode(HTMLNode):
         properties = ""
         if self.props is not None:
             properties = self.props_to_html()
-        if not self.value:
+        if not self.value and self.tag != "img":
             raise ValueError("HTMLNode value is missing!")
         if self.tag is None:
             result = self.value

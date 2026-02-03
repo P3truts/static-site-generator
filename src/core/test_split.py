@@ -1,5 +1,5 @@
 from src.textnode import TextNode, TextType
-from core.split import Split
+from src.core.split import Split
 import unittest
 
 class TestSplit(unittest.TestCase):

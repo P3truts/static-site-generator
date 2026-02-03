@@ -1,7 +1,7 @@
 from src.textnode import TextNode, TextType
 from src.leafnode import LeafNode
 from src.parentnode import ParentNode
-from core.split import Split
+from src.core.split import Split
 from enum import Enum
 import re
 
@@ -85,28 +85,32 @@ class Transform:
                 h_num = block[:6].count("#")
                 child_nodes = Transform._text_to_children(block)
                 for child in child_nodes:
-                    child.value = child.value.strip("#")
+                    child.value = child.value.strip("#").strip(" ")
                 node = ParentNode(f"h{h_num}", child_nodes, None)
                 nodes.append(node)
             elif bl_typ == BlockType.QUOTE:
-                rblock = block.strip(">")
+                rblock = block.replace(">", "").strip(" ")
                 child_nodes = Transform._text_to_children(rblock)
                 node = ParentNode("blockquote", child_nodes, None)
                 nodes.append(node)
             elif bl_typ == BlockType.UNORDERED_LIST:
-                child_nodes = Split.split_text_block_to_list_blocks(block)
+                list_text = Split.split_text_block_to_list_blocks(block)
+                tnodes = Transform.text_to_textnodes(list_text)
                 last_nodes = []
-                for tnode in child_nodes:
+                for tnode in tnodes:
                     lnode = Transform.text_node_to_html_node(tnode)
                     last_nodes.append(lnode)
+
                 node = ParentNode("ul", last_nodes)
                 nodes.append(node)
             elif bl_typ == BlockType.ORDERED_LIST:
-                child_nodes = Split.split_text_block_to_list_blocks(block)
+                list_text = Split.split_text_block_to_list_blocks(block)
+                tnodes = Transform.text_to_textnodes(list_text)
                 last_nodes = []
-                for tnode in child_nodes:
+                for tnode in tnodes:
                     lnode = Transform.text_node_to_html_node(tnode)
                     last_nodes.append(lnode)
+ 
                 node = ParentNode("ol", last_nodes)
                 nodes.append(node)
             else:

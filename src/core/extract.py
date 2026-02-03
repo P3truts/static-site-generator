@@ -18,4 +18,13 @@ class Extract:
 
         return res
 
+    @staticmethod
+    def extract_title(md):
+        patt = r"# (.*)"
 
+        res = re.findall(patt, md)
+
+        if not res:
+            raise Exception("Title is missing!")
+
+        return res[0]

@@ -1,5 +1,5 @@
 from src.textnode import TextNode, TextType
-from core.extract import Extract
+from src.core.extract import Extract
 import re
 
 class Split:
@@ -109,14 +109,23 @@ class Split:
         if block == "":
             raise ValueError("List block is empty!")
 
-        res_list = []
-        patt = r"\n"
-        litems = re.split(patt, block)
-        for litem in litems:
-            text = f"<li>{litem}</li>\n"
-            res_node = TextNode(text, TextType.PLAIN_TEXT)
-            res_list.append(res_node)
+        res_text = ""
+        
+        ul_patt = r"\n-"
+        ol_patt = r"\n\d."
+        litems = []
+        if bool(re.search(ul_patt, block)):
+            litems = re.split(ul_patt, block)
+            litems[0] = litems[0][1:]
+        else:
+            litems = re.split(ol_patt, block)
+            litems[0] = litems[0][2:]
 
-        return res_list
+        for litem in litems:
+            litem = litem.strip(" ")
+            text = f"<li>{litem}</li>\n"
+            res_text += text
+
+        return res_text
 
 

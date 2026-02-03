@@ -1,4 +1,4 @@
-from core.extract import Extract
+from src.core.extract import Extract
 import unittest
 
 class TestExtract(unittest.TestCase):
@@ -56,6 +56,20 @@ class TestExtract(unittest.TestCase):
         res = Extract.extract_markdown_links(text)
 
         self.assertEqual(expected, res)
+
+    def test_extract_markdown_title(self):
+        text = "# This is the title "
+
+        expected = "This is the title "
+
+        res = Extract.extract_title(text)
+
+        self.assertEqual(expected, res)
+
+    def test_extract_markdown_title_not_eq(self):
+        text = " This is the title "
+
+        self.assertRaises(Exception, lambda: Extract.extract_title(text))
 
 
 if __name__ == "__main__":

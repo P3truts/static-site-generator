@@ -1,5 +1,5 @@
 from src.textnode import TextNode, TextType
-from core.transform import BlockType, Transform
+from src.core.transform import BlockType, Transform
 import unittest
 
 class TestTransform(unittest.TestCase):
@@ -239,7 +239,7 @@ class TestTransform(unittest.TestCase):
         html = node.to_html()
         self.assertEqual(
             html,
-            "<div><h3> This is <b>bolded</b> heading\ntext in a p\ntag here</h3><h5> This is another heading with <i>italic</i> text and <code>code</code> here</h5></div>",
+            "<div><h3>This is<b>bolded</b>heading\ntext in a p\ntag here</h3><h5>This is another heading with<i>italic</i>text and<code>code</code>here</h5></div>",
         )
 
     def test_markdown_to_html_node_quote(self):
@@ -256,7 +256,7 @@ class TestTransform(unittest.TestCase):
         html = node.to_html()
         self.assertEqual(
             html,
-            "<div><blockquote> This is <b>bolded</b> quote\ntext in a p\ntag here</blockquote><blockquote>This is another quote with <i>italic</i> text and <code>code</code> here</blockquote></div>",
+            "<div><blockquote>This is <b>bolded</b> quote\ntext in a p\ntag here</blockquote><blockquote>This is another quote with <i>italic</i> text and <code>code</code> here</blockquote></div>",
         )
 
     def test_markdown_to_html_node_unordered_list(self):
@@ -265,8 +265,8 @@ class TestTransform(unittest.TestCase):
 
                 This is an unordered list:
 
-                - This is the first list item in a list block
-                - This is a list item
+                - This is the first _italic_ list item in a list block
+                - This is a list **bolded** item
                 - This is another list item
              """
 
@@ -274,7 +274,7 @@ class TestTransform(unittest.TestCase):
         html = node.to_html()
         self.assertEqual(
             html,
-            "<div><h1> This is a heading</h1><p>This is an unordered list:</p><ul><li>- This is the first list item in a list block</li>\n<li>- This is a list item</li>\n<li>- This is another list item</li>\n</ul></div>",
+            "<div><h1>This is a heading</h1><p>This is an unordered list:</p><ul><li>This is the first <i>italic</i> list item in a list block</li>\n<li>This is a list <b>bolded</b> item</li>\n<li>This is another list item</li>\n</ul></div>",
         )
 
     def test_markdown_to_html_node_ordered_list(self):
@@ -283,8 +283,8 @@ class TestTransform(unittest.TestCase):
 
                 This is an ordered list:
 
-                1. This is the first list item in a list block
-                2. This is a list item
+                1. This is the first _italic_ list item in an ordered list block
+                2. This is a **bolded** list item
                 3. This is another list item
              """
 
@@ -292,7 +292,7 @@ class TestTransform(unittest.TestCase):
         html = node.to_html()
         self.assertEqual(
             html,
-            "<div><h1> This is a heading</h1><p>This is an ordered list:</p><ol><li>1. This is the first list item in a list block</li>\n<li>2. This is a list item</li>\n<li>3. This is another list item</li>\n</ol></div>",
+            "<div><h1>This is a heading</h1><p>This is an ordered list:</p><ol><li>This is the first <i>italic</i> list item in an ordered list block</li>\n<li>This is a <b>bolded</b> list item</li>\n<li>This is another list item</li>\n</ol></div>",
         )
 
     def test_markdown_to_html_node_code(self):
@@ -330,12 +330,12 @@ class TestTransform(unittest.TestCase):
         html = node.to_html()
         self.assertNotEqual(
             html,
-            "<div><h3> This is <b>bolded</b> heading\ntext in a p\ntag here</h3><h5> This is another heading with <i>italic</i> text and <code>code</code> here</h5></div>",
+            "<div><h3>This is <b>bolded</b> heading\ntext in a p\ntag here</h3><h5> This is another heading with <i>italic</i> text and <code>code</code> here</h5></div>",
         )
 
     def test_markdown_to_html_node_quote_not_eq(self):
         md = """
-                <> This is **bolded** quote
+                <> > > This is **bolded** quote
                 text in a p
                 tag here
 
@@ -347,7 +347,7 @@ class TestTransform(unittest.TestCase):
         html = node.to_html()
         self.assertNotEqual(
             html,
-            "<div><blockquote> This is <b>bolded</b> quote\ntext in a p\ntag here</blockquote><blockquote>This is another quote with <i>italic</i> text and <code>code</code> here</blockquote></div>",
+            "<div><blockquote>This is <b>bolded</b> quote\ntext in a p\ntag here</blockquote><blockquote>This is another quote with <i>italic</i> text and <code>code</code> here</blockquote></div>",
         )
 
     def test_markdown_to_html_node_unordered_list_not_eq(self):
@@ -365,7 +365,7 @@ class TestTransform(unittest.TestCase):
         html = node.to_html()
         self.assertNotEqual(
             html,
-            "<div><h1> This is a heading</h1><p>This is an unordered list:</p><ul><li>- This is the first list item in a list block</li>\n<li>- This is a list item</li>\n<li>- This is another list item</li>\n</ul></div>",
+            "<div><h1>This is a heading</h1><p>This is an unordered list:</p><ul><li>This is the first list item in a list block</li>\n<li>This is a list item</li>\n<li>This is another list item</li>\n</ul></div>",
         )
     def test_markdown_to_html_node_ordered_list_not_eq(self):
         md = """
@@ -382,7 +382,7 @@ class TestTransform(unittest.TestCase):
         html = node.to_html()
         self.assertNotEqual(
             html,
-            "<div><h1> This is a heading</h1><p>This is an ordered list:</p><ol><li>1. This is the first list item in a list block</li>\n<li>2. This is a list item</li>\n<li>3. This is another list item</li>\n</ol></div>",
+            "<div><h1> This is a heading</h1><p>This is an ordered list:</p><ol><li>This is the first list item in a list block</li>\n<li>This is a list item</li>\n<li>This is another list item</li>\n</ol></div>",
         )
 
     def test_markdown_to_html_node_code_raises_Ex(self):
