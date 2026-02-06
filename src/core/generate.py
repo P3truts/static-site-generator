@@ -36,7 +36,7 @@ class Generate:
             print(f"Files from the source {src_dir} directory have been copied to the destination {dest_dir} directory!")
 
     @staticmethod
-    def generate_page(from_path, template_path, dest_path):
+    def generate_page(from_path, template_path, dest_path, basepath):
         print(f"Generating page from source '{from_path}' to destination '{dest_path}' using the template '{template_path}'!")
 
         src_file_cont = ""
@@ -60,6 +60,8 @@ class Generate:
 
         templ_file_cont = templ_file_cont.replace("{{ Title }}", title)
         templ_file_cont = templ_file_cont.replace("{{ Content }}", html_text)
+        templ_file_cont = templ_file_cont.replace("href=\"/", f"href=\"{basepath}")
+        templ_file_cont = templ_file_cont.replace("src=\"/", f"src=\"{basepath}")
 
 
         # overwrites existing html page
@@ -69,7 +71,7 @@ class Generate:
         print(f"Static site page '{dest_path}' generated!")
 
     @staticmethod
-    def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
         print(f"Generating pages recursively from source '{dir_path_content}' to destination '{dest_dir_path}' using the template '{template_path}'!")
 
         if os.path.exists(dir_path_content) and os.path.isdir(dir_path_content):
@@ -90,11 +92,11 @@ class Generate:
                 html_item_dest = os.path.join(dest_dir_path, item)
                 html_item_path = html_item_dest.replace(".md", ".html")
                 print(f"Generating page {item_path}!")
-                Generate.generate_page(item_path, template_path, html_item_path)
+                Generate.generate_page(item_path, template_path, html_item_path, basepath)
             else:
                 if os.path.isdir(item_path):
                     dest_path = os.path.join(dest_dir_path, item)
                     print(f"Directory {item_path} found! Moving inside to check for pages!")
-                    Generate.generate_pages_recursive(item_path, template_path, dest_path)
+                    Generate.generate_pages_recursive(item_path, template_path, dest_path, basepath)
         print(f"Pages from the source {dir_path_content} directory have been created to the destination {dest_dir_path} directory!")
 
