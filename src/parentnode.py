@@ -17,7 +17,8 @@ class ParentNode(HTMLNode):
         result = f"<{self.tag}{parent_props}>"
         if self.children:
             for child in self.children:
-                result += child.to_html()
+                if child is not None:
+                    result += child.to_html()
 
         result += f"</{self.tag}>"
         return result

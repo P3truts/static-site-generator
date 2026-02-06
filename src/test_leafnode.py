@@ -45,6 +45,11 @@ class TestLeafNode(unittest.TestCase):
 
         self.assertEqual(expected, node.to_html())
 
+    def test_leaf_to_html_wo_tag_value(self):
+        node = LeafNode(None, "")
+
+        self.assertRaises(ValueError, lambda: node.to_html())
+
 
 if __name__ == "__main__":
     unittest.main()

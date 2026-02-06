@@ -67,3 +67,34 @@ class Generate:
             p.write(templ_file_cont)
 
         print(f"Static site page '{dest_path}' generated!")
+
+    @staticmethod
+    def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+        print(f"Generating pages recursively from source '{dir_path_content}' to destination '{dest_dir_path}' using the template '{template_path}'!")
+
+        if os.path.exists(dir_path_content) and os.path.isdir(dir_path_content):
+            print(f"The source {dir_path_content} directory exists!")
+        else:
+            raise FileNotFoundError(f"The source {dir_path_content} directory does not exist!")
+
+        if os.path.exists(dest_dir_path) and os.path.isdir(dest_dir_path):
+            print(f"The source {dest_dir_path} directory exists!")
+        else:
+            os.mkdir(dest_dir_path)
+            if not os.path.exists(dest_dir_path):
+                raise FileNotFoundError(f"The source {dest_dir_path} directory does not exist!")
+
+        for item in os.listdir(dir_path_content):
+            item_path = os.path.join(dir_path_content, item)
+            if os.path.isfile(item_path) and item_path.endswith(".md"):
+                html_item_dest = os.path.join(dest_dir_path, item)
+                html_item_path = html_item_dest.replace(".md", ".html")
+                print(f"Generating page {item_path}!")
+                Generate.generate_page(item_path, template_path, html_item_path)
+            else:
+                if os.path.isdir(item_path):
+                    dest_path = os.path.join(dest_dir_path, item)
+                    print(f"Directory {item_path} found! Moving inside to check for pages!")
+                    Generate.generate_pages_recursive(item_path, template_path, dest_path)
+        print(f"Pages from the source {dir_path_content} directory have been created to the destination {dest_dir_path} directory!")
+

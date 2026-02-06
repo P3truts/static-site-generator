@@ -18,6 +18,8 @@ class BlockType(Enum):
 class Transform:
     @staticmethod
     def text_node_to_html_node(text_node):
+        if text_node.text.strip(" ") == "" and text_node.text_type != TextType.IMAGE:
+            return
         if text_node.text_type == TextType.PLAIN_TEXT:
             return LeafNode(None, text_node.text)
         if text_node.text_type == TextType.BOLD_TEXT:
@@ -85,7 +87,8 @@ class Transform:
                 h_num = block[:6].count("#")
                 child_nodes = Transform._text_to_children(block)
                 for child in child_nodes:
-                    child.value = child.value.strip("#").strip(" ")
+                    if child is not None and child.value is not None:
+                        child.value = child.value.strip("#").strip(" ")
                 node = ParentNode(f"h{h_num}", child_nodes, None)
                 nodes.append(node)
             elif bl_typ == BlockType.QUOTE:
